@@ -11,7 +11,7 @@ class Empregado {
     static belongsTo = [departamento: Departamento]
 
     static constraints = {
-        id generator: 'assigned', nullable: false, blank: false, primary: true, maxSize: 10
+        id generator: 'increment', primary: true
         nome nullable: false, blank: false, unique: true, maxSize: 120
         dataNascimento nullable: true, blank: false
         matricula nullable: false, blank: false, unique: true

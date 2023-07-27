@@ -7,7 +7,7 @@ class Departamento {
     static hasMany = [empregados: Empregado]
 
     static constraints = {
-        id generator: 'assigned', nullable: false, blank: false, primary: true, maxSize: 10
+        id generator: 'increment', primary: true
         nome nullable: false, blank: false, unique: true, maxSize: 120
     }
 }
