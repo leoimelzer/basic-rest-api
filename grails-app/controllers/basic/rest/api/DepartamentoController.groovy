@@ -8,43 +8,32 @@ class DepartamentoController {
     DepartamentoService departamentoService = new DepartamentoService()
 	static responseFormats = ['json', 'xml']
 
-    def index() {
-        List<Departamento> data = departamentoService.index()
-
+    Object index() {
+        List<Departamento> data = departamentoService.getDepartamentos()
         respond([success: true, data: data], status: 200)
     }
 
-    def show() {
-        Long id = Long.parseLong(params.id)
-        Departamento data = departamentoService.show(id)
-
+    Object show(Long id) {
+        Departamento data = departamentoService.showDepartamento(id)
         respond([success: true, data: data], status: 200)
     }
 
-    def save() {
-        Long id = Long.parseLong(request.JSON.id)
-        String nome = request.JSON.nome
-        Departamento data = departamentoService.save(id, nome)
-
+    Object save(DepartamentoCommand command) {
+        Departamento data = departamentoService.addDepartamento(command)
         respond([success: true, data: data], status: 201)
     }
 
-    def update() {
-        Long id = Long.parseLong(request.JSON.id)
-        String nome = request.JSON.nome
-        departamentoService.update(id, nome)
-
+    Object update(DepartamentoCommand command) {
+        departamentoService.editDepartamento(command)
         respond([success: true], status: 204)
     }
 
-    def delete() {
-        Long id = Long.parseLong(request.JSON.id)
-        departamentoService.delete(id)
-
+    Object delete(Long id) {
+        departamentoService.removeDepartamento(id)
         respond([success: true], status: 204)
     }
 
-    def handleException(Exception ex) {
+    Object handleException(Exception ex) {
         respond([success: false, message: ex.getMessage()], status: 400)
     }
 }

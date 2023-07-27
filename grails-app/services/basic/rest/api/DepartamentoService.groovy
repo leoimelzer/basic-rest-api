@@ -5,14 +5,12 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class DepartamentoService {
 
-    List<Departamento> index() {  Departamento.createCriteria().list {} }
+    List<Departamento> getDepartamentos() {  Departamento.createCriteria().list {} }
 
-    Departamento show(Long id) { Departamento.get(id) }
+    Departamento showDepartamento(Long id) { Departamento.get(id) }
 
-    Departamento save(Long id, String nome) {
-        Departamento record = new Departamento()
-        record.id = id
-        record.nome = nome
+    Departamento addDepartamento(DepartamentoCommand command) {
+        Departamento record = new Departamento(nome: command.nome)
 
         if (!record.validate()) throw new Exception("${record.errors}")
 
@@ -20,19 +18,21 @@ class DepartamentoService {
         return record
     }
 
-    void update(Long id, String nome) {
-        Departamento record = Departamento.get(id)
-
+    void editDepartamento(DepartamentoCommand command) {
+        Departamento record = Departamento.get(command.id)
         if (!record) return
-        if (nome) record.nome = nome
+
+        record.nome = command.nome
         if (!record.validate()) throw new Exception("${record.errors}")
 
         record.save(flush: true)
     }
 
-    void delete(Long id) {
+    void removeDepartamento(Long id) {
         Departamento record = Departamento.get(id)
+
         if (!record) return
+
         record.delete(flush: true)
     }
 }
