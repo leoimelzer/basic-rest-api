@@ -7,7 +7,7 @@ class UrlMappings {
         get "/$controller/$id(.$format)?"(action:"show")
         post "/$controller(.$format)?"(action:"save")
         put "/$controller(.$format)?"(action:"update")
-        delete "/$controller(.$format)?"(action:"delete")
+        delete "/$controller/$id(.$format)?"(action:"delete")
 
         "/"(controller: 'application', action:'index')
         "500"(view: '/error')
