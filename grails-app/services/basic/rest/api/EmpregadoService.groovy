@@ -7,15 +7,15 @@ import java.time.format.DateTimeFormatter
 @Transactional
 class EmpregadoService {
 
-    private static Map getResponseObject(Empregado emp) {
+    private static Map getResponseObject(Empregado empregado) {
         DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
         return [
-            id: emp.id,
-            nome: emp.nome,
-            matricula: emp.matricula,
-            dataNascimento: emp.dataNascimento.format(FORMATTER),
-            departamentoId: emp.departamentoId
+            id: empregado.id,
+            nome: empregado.nome,
+            matricula: empregado.matricula,
+            dataNascimento: empregado.dataNascimento.format(FORMATTER),
+            departamentoId: empregado.departamentoId
         ]
     }
 
@@ -31,11 +31,11 @@ class EmpregadoService {
     }
 
     Map show(Long id) {
-        Empregado emp = Empregado.get(id)
+        Empregado empregado = Empregado.get(id)
 
-        if (!emp) throw new Exception("Empregado não encontrado.")
+        if (!empregado) throw new Exception("Empregado não encontrado.")
 
-        Map response = getResponseObject(emp)
+        Map response = getResponseObject(empregado)
         return response
     }
 
@@ -71,8 +71,8 @@ class EmpregadoService {
         if (!departamento) throw new Exception("Departamento não encontrado.")
 
         /*
-          Realizará a busca de um empregado conforme os parâmetros recebidos, caso os valores obtidos em
-          "departamentoId" e "matrícula" levem a um empregado já cadastrado e diferente do empregado editado
+          Realizará a busca de um empregado conforme os "departamentoId" e "matrícula" recebidos
+          caso exista um empregado com estes dados e este seja diferente do registro sendo editado
           retornará o erro tratado informando da violação da UK
         */
         Integer matricula = command.matricula ?: empregado.matricula
@@ -93,10 +93,10 @@ class EmpregadoService {
     }
 
     void delete(Long id) {
-        Empregado emp = Empregado.get(id)
+        Empregado empregado = Empregado.get(id)
 
-        if (!emp) throw new Exception("Empregado não encontrado.")
+        if (!empregado) throw new Exception("Empregado não encontrado.")
 
-        emp.delete(flush: true)
+        empregado.delete(flush: true)
     }
 }
