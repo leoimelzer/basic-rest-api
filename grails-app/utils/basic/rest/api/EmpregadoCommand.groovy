@@ -7,5 +7,5 @@ class EmpregadoCommand {
     String nome
     LocalDate dataNascimento
     Integer matricula
-    Departamento departamento
+    Long departamentoId
 }
