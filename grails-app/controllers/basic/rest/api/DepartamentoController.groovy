@@ -1,12 +1,9 @@
 package basic.rest.api
 
-
-import grails.rest.*
-import grails.converters.*
-
 class DepartamentoController {
+	static responseFormats = ['json']
+
     DepartamentoService departamentoService = new DepartamentoService()
-	static responseFormats = ['json', 'xml']
 
     Object index() {
         List<Departamento> data = departamentoService.getDepartamentos()
