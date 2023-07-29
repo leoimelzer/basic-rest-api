@@ -15,14 +15,13 @@ class EmpregadoService {
             nome: emp.nome,
             matricula: emp.matricula,
             dataNascimento: emp.dataNascimento.format(FORMATTER),
-            departamento: emp.departamentoId
+            departamentoId: emp.departamentoId
         ]
     }
 
     ArrayList index() {
-        List<Empregado> empregados = Empregado.createCriteria().list {}
-
         ArrayList response = []
+        List<Empregado> empregados = Empregado.createCriteria().list {}
 
         for (Empregado emp : empregados) {
             response << getResponseObject(emp)
@@ -34,58 +33,69 @@ class EmpregadoService {
     Map show(Long id) {
         Empregado emp = Empregado.get(id)
 
-        if (!emp) {
-            throw new Exception("Empregado não encontrado.")
-        }
+        if (!emp) throw new Exception("Empregado não encontrado.")
 
         Map response = getResponseObject(emp)
         return response
     }
 
     Map save(EmpregadoCommand command) {
-        Empregado emp = new Empregado()
+        Departamento departamento = Departamento.get(command.departamentoId)
 
-        emp.nome = command.nome
-        emp.departamento = command.departamento
-        emp.matricula = command.matricula
-        if (command.dataNascimento) emp.dataNascimento = command.dataNascimento
+        if (!departamento) throw new Exception("Departamento não encontrado.")
 
-        if (!emp.validate()) {
-            throw new Exception("${emp.errors}")
+        if (Empregado.findByDepartamentoAndMatricula(departamento, command.matricula)) {
+            throw new Exception("Matrícula já cadastrada para este departamento.")
         }
 
-        emp.save(flush: true)
+        Empregado empregado = new Empregado()
+        empregado.nome = command.nome
+        empregado.departamento = departamento
+        empregado.matricula = command.matricula
+        if (command.dataNascimento) empregado.dataNascimento = command.dataNascimento
 
-        Map response = getResponseObject(emp)
+        if (!empregado.validate()) {
+            throw new Exception("${empregado.errors}")
+        }
 
+        empregado.save(flush: true)
+        Map response = getResponseObject(empregado)
         return response
     }
 
     void update(EmpregadoCommand command) {
-        Empregado emp = Empregado.get(command.id)
+        Empregado empregado = Empregado.get(command.id)
+        if (!empregado) throw new Exception("Empregado não encontrado.")
 
-        if (!emp) {
-            throw new Exception("Empregado não encontrado.")
+        Departamento departamento = Departamento.get(command.departamentoId ?: empregado.departamentoId)
+        if (!departamento) throw new Exception("Departamento não encontrado.")
+
+        /*
+          Realizará a busca de um empregado conforme os parâmetros recebidos, caso os valores obtidos em
+          "departamentoId" e "matrícula" levem a um empregado já cadastrado e diferente do empregado editado
+          retornará o erro tratado informando da violação da UK
+        */
+        Integer matricula = command.matricula ?: empregado.matricula
+        Empregado existentEmpregado = Empregado.findByDepartamentoAndMatricula(departamento, matricula)
+
+        if (existentEmpregado && existentEmpregado !== empregado) {
+            throw new Exception("Matrícula já cadastrada para este departamento.")
         }
 
-        if (command.nome) emp.nome = command.nome
-        if (command.dataNascimento) emp.dataNascimento = command.dataNascimento
-        if (command.matricula) emp.matricula = command.matricula
-        if (command.departamento) emp.departamento = command.departamento
+        if (command.nome) empregado.nome = command.nome
+        if (command.dataNascimento) empregado.dataNascimento = command.dataNascimento
+        if (command.matricula) empregado.matricula = command.matricula
+        if (command.departamentoId) empregado.departamento = Departamento.findById(command.departamentoId)
 
-        if (!emp.validate()) {
-            throw new Exception("${emp.errors}")
-        }
+        if (!empregado.validate()) throw new Exception("${empregado.errors}")
 
-        emp.save(flush: true)
+        empregado.save(flush: true)
     }
 
     void delete(Long id) {
         Empregado emp = Empregado.get(id)
 
-        if (!emp) {
-            throw new Exception("Empregado não encontrado.")
-        }
+        if (!emp) throw new Exception("Empregado não encontrado.")
 
         emp.delete(flush: true)
     }
