@@ -1,7 +1,10 @@
 package basic.rest.api
 
+import groovy.transform.EqualsAndHashCode
+
 import java.time.LocalDate
 
+@EqualsAndHashCode(includes='id')
 class Empregado {
     Long id
     String nome
